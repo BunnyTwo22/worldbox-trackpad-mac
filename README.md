@@ -1,0 +1,131 @@
+# WorldBox Trackpad for Mac
+
+为 MacBook 触控板添加双指平移和捏合缩放。社区实验性补丁，与 WorldBox 官方无隶属关系。
+
+> **v0.2.0-preview** · Mac-only · Steam WorldBox 0.51.2
+> [下载预览包](https://github.com/BunnyTwo22/worldbox-trackpad-mac/releases/tag/v0.2.0-preview) · [反馈问题](https://github.com/BunnyTwo22/worldbox-trackpad-mac/issues)
+
+Two-finger pan and pinch-to-zoom for WorldBox on a Mac trackpad. Tested on Apple Silicon running the Steam 0.51.2 x86_64 build through Rosetta. See [English quick start](#english-quick-start).
+
+## 操作
+
+| 手势或按键 | 功能 |
+| --- | --- |
+| 双指滑动 | 按滑动距离平移地图，沿用系统滚动方向设置 |
+| 双指张开／捏合 | 放大／缩小，使用游戏默认 Q/E 键位 |
+| F8（部分键盘 Fn+F8） | 开关补丁 |
+| 按住 Option | 临时使用游戏原始滚动行为 |
+
+## 适配范围
+
+- **已实测**：Steam WorldBox **0.51.2 / build 719**，Unity 2022.3.60f1；Apple Silicon Mac 通过 Rosetta 运行 x86_64 游戏。
+- 使用者已确认双指平移和捏合缩放方向、手感正常。
+- Intel Mac、其他 macOS 环境及其他游戏版本尚未验证。Windows 和移动版不适用。
+- 平移接口目前限定游戏版本 `0.51.2`。
+- 与 NeoModLoader、PowerBox、ActorHistory、Optime 同时启动成功，不代表所有功能组合都已测试。
+
+## 安装
+
+1. 将发布包解压到一个保留使用的文件夹。不要分开移动启动器与 `Trackpad.dylib`。
+2. 保存并退出 WorldBox，确认 Steam 已登录，游戏本身能正常启动。
+3. 在 Finder 中双击 **Start WorldBox Trackpad.command**。
+4. 以后也从这个启动器进入游戏；直接点击 Steam 的“开始游戏”不会加载本补丁。
+
+默认游戏位置：
+
+```text
+~/Library/Application Support/Steam/steamapps/common/worldbox/worldbox.app
+```
+
+如果游戏安装在另一块硬盘或 Steam 库，编辑启动器中的 `GAME_DIR`，指向实际的 `worldbox.app`。
+
+本补丁不需要 NeoModLoader、游戏实验模式或辅助功能权限。
+
+### 下载后的首次运行
+
+预览二进制仅采用本地 ad-hoc 签名，**没有 Apple 开发者签名或公证**。下载后首次启动尚未在另一台 Mac 上验证；若系统阻止运行，请先核对发布来源，也可使用附带源码自行构建。无需关闭 SIP 等系统安全保护。
+
+## 工作方式
+
+macOS 手势事件进入游戏进程后，补丁将捏合转换为缩放键输入，将双指滑动转换为相机的实际位移。它读取当前缩放倍率换算距离，平移不再模拟方向键，也不叠加旧版的键盘移动惯性。
+
+- 不覆盖游戏程序集，不安装全局键鼠监听。
+- 平移事件合并至约每秒 60 次；空闲时无常驻轮询。
+- 它是输入体验补丁，**不是游戏整体性能优化模组**，不承诺提高 FPS。
+- 检查游戏菜单和控制锁定状态后再平移；遇到输入冲突可用 F8 或 Option。
+
+## 已知限制
+
+- 缩放仍依赖默认 Q/E 键位。
+- 某些精确滚动鼠标（如部分 Magic Mouse）也会触发平移。
+- 未覆盖全部窗口、游戏状态、第三方模组组合或长时间运行情况。
+- 游戏更新后需要重新检查相机接口；不要假设未来版本直接兼容。
+
+## 排查
+
+游戏日志：
+
+```text
+~/Library/Logs/mkarpenko/WorldBox/Player.log
+```
+
+正常加载包含 `[WorldBox Trackpad v2] loaded`。首次在地图滑动后，成功绑定接口会记录 `direct camera bridge ready`。
+
+启动器日志：
+
+```text
+~/Library/Logs/WorldBoxTrackpad/launch.log
+```
+
+如果不生效，先确认旧游戏进程已经退出、通过专用启动器打开、F8 没有关闭补丁，以及游戏版本为 0.51.2。
+
+## 从源码构建
+
+需要 Xcode Command Line Tools。在此文件夹的终端中运行：
+
+```sh
+zsh build.sh
+```
+
+输入转换测试：
+
+```sh
+xcrun clang -arch x86_64 -fobjc-arc -fblocks -framework Cocoa -framework Carbon test.m -o test-input
+./test-input
+```
+
+自动测试覆盖坐标换算、不同缩放倍率、事件合并、旁路、无空闲定时器和缩放回归；不能代替真实设备测试。
+
+## 卸载
+
+保存并退出游戏，从 Steam 正常启动即可恢复原版输入。可以移除整个补丁文件夹，不需要删除游戏或存档。
+
+## 文件与署名
+
+包内包含源码、预览二进制、启动器、测试源码及安装说明；不包含游戏文件、第三方模组、存档、个人日志或本机绝对路径。
+
+发布与维护：[BunnyTwo22](https://github.com/BunnyTwo22)。本项目使用 AI 编程助手协助实现，并由使用者在真实触控板上测试和反馈。
+
+尚未选择开源许可证。源码公开用于透明审查；请勿假定它已按 MIT 或其他开源许可证授权。
+
+## 设计参考
+
+- [Miro 的触控板导航](https://help.miro.com/hc/en-us/articles/360017731053-Using-Miro-with-a-mouse-trackpad-or-touchscreen)
+- [Apple 手势事件文档](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/EventOverview/HandlingTouchEvents/HandlingTouchEvents.html)
+
+## English quick start
+
+1. Save and quit WorldBox. Keep the extracted folder intact.
+2. Make sure Steam is signed in and the game works normally.
+3. Double-click `Start WorldBox Trackpad.command` in Finder. Use this launcher each time; launching directly from Steam does not load the patch.
+4. Two-finger scroll pans the map; pinch zooms using the default Q/E bindings. F8 toggles the patch (possibly Fn+F8); hold Option for original scrolling.
+
+The launcher uses the default macOS Steam library path. If the game is elsewhere, edit `GAME_DIR` in the launcher. No NeoModLoader or experimental mode is required.
+
+**Compatibility:** tested only with Steam WorldBox 0.51.2 / build 719 on an Apple Silicon Mac running the x86_64 game through Rosetta. Intel Macs and other game/OS versions are unverified. The pan bridge is version-gated to 0.51.2.
+
+**Distribution:** this preview has an ad-hoc signature, not Apple Developer ID signing or notarization. First launch after downloading on another Mac has not been verified. You may inspect and build the included source with Xcode Command Line Tools (`zsh build.sh`). No need to disable SIP or system security.
+
+This is an input patch, not an FPS booster. To disable it, quit and launch the game normally through Steam. Game files and saves are not bundled or overwritten. Report issues with the game/macOS version and relevant log lines, removing personal paths first.
+
+AI-assisted development, with human testing on a real trackpad. No open-source license has been selected.
