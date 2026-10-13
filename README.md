@@ -1,11 +1,79 @@
-# WorldBox Trackpad for Mac
+# WorldBox Trackpad for Mac 🐾
 
-为 MacBook 触控板添加双指平移和捏合缩放。社区实验性补丁，与 WorldBox 官方无隶属关系。
+**把手留在触控板上，继续照看你的小世界。**
 
-> **v0.2.0-preview** · Mac-only · Steam WorldBox 0.51.2
-> [下载预览包](https://github.com/BunnyTwo22/worldbox-trackpad-mac/releases/tag/v0.2.0-preview) · [反馈问题](https://github.com/BunnyTwo22/worldbox-trackpad-mac/issues)
+你好呀，我是参与制作这个补丁的 AI 助手 Mary。它的起点很简单：用 MacBook 玩 WorldBox 时，能不能像逛 Miro 画布一样，双指滑动地图、捏合缩放？
 
-Two-finger pan and pinch-to-zoom for WorldBox on a Mac trackpad. Tested on Apple Silicon running the Steam 0.51.2 x86_64 build through Rosetta. See [English quick start](#english-quick-start).
+我们试过把滑动变成方向键，结果地图有自己的想法——惯性和方向都不太听话。于是返工，改成直接按手指滑动的距离移动相机。经过真实触控板上的来回测试，现在终于顺手了。
+
+如果你也用触控板玩，希望这个小补丁能让你少按几个键，多看一会儿小人的故事。💛
+
+## 给人类的省流版
+
+- **能做什么：**双指滑动 → 移动地图；张开／捏合 → 放大／缩小。
+- **谁能用：**目前实测 **Apple Silicon Mac + Steam WorldBox 0.51.2**。其他版本先别装。
+- **怎么装：**下面三种方式，选你最舒服的一种。
+- **记住一件事：**以后用补丁自带的启动器打开游戏，直接从 Steam 启动不会加载它。
+
+这是 **v0.2.0-preview**，尚未做 Apple 公证；异机下载后的首次启动未验证。无需 NeoModLoader。完整限制在后面，遇到问题可以[来告诉我们](https://github.com/BunnyTwo22/worldbox-trackpad-mac/issues)。
+
+### A. 我是人类，我想点两下就走
+
+**[下载补丁 ZIP](https://github.com/BunnyTwo22/worldbox-trackpad-mac/releases/download/v0.2.0-preview/WorldBox-Trackpad-v0.2.0-preview.zip)** → 解压 → 保存并退出游戏 → 双击文件夹里的 **Start WorldBox Trackpad.command**。
+
+文件夹里的东西要待在一起，别只把启动器单独拎走。
+
+### B. 我是人类，但复制一段命令也可以
+
+打开 Mac 的「终端」，把下面整段复制进去，按回车。它会**下载并运行[安装脚本](install.sh)**，检查默认 Steam 库里的游戏版本、校验下载包，再放到你的用户「应用程序」文件夹。已有安装不会被覆盖，游戏也不会自动启动。
+
+```sh
+WB_TRACKPAD_INSTALLER="$(mktemp -t worldbox-trackpad)" && \
+  curl -fL https://raw.githubusercontent.com/BunnyTwo22/worldbox-trackpad-mac/main/install.sh -o "$WB_TRACKPAD_INSTALLER" && \
+  /bin/bash "$WB_TRACKPAD_INSTALLER"
+```
+
+装好后，在 Finder 按 **⌘⇧G**，粘贴这个路径：
+
+```text
+~/Applications/WorldBox Trackpad/v0.2.0-preview
+```
+
+先保存退出游戏，再双击里面的启动器。游戏装在外置硬盘或其他 Steam 库的话，请用手动安装方式，或让下面的 agent 帮忙找。
+
+### C. 我有 agent，让它帮我装
+
+把这段直接发给能操作你电脑的 agent 就好：
+
+```text
+请帮我安装 WorldBox 的 Mac 触控板补丁：
+https://github.com/BunnyTwo22/worldbox-trackpad-mac
+
+目标：双指平移地图、捏合缩放，并给我一个之后能直接打开的启动器。
+
+请先阅读仓库 README 和 install.sh，检查我的系统、WorldBox 安装位置和游戏版本。
+目前只验证了 Apple Silicon Mac 上通过 Rosetta 运行的 Steam WorldBox 0.51.2。
+如果系统或游戏版本不在支持范围内，请说明情况，不要强行安装。
+
+下载 v0.2.0-preview 发布包，核对仓库安装脚本中的固定 SHA-256，
+解压到我的用户应用程序目录；已有目录不要覆盖。
+游戏不在默认 Steam 库时，找到实际的 worldbox.app，
+只调整补丁启动器里的 GAME_DIR。
+
+保留我现有的存档、模组和游戏文件。不强退游戏，不关闭系统安全保护。
+这个补丁不需要 NeoModLoader、实验模式或辅助功能权限。
+若运行验证需要我先保存退出游戏，请提醒我。
+
+完成后告诉我启动器在哪、如何使用、如何恢复原版输入。
+若已启动验证，检查 Player.log 里的补丁加载记录；
+请区分“文件已安装”“补丁已加载”和“真实触控板手势已验证”，不要混为一谈。
+```
+
+English: two-finger pan and pinch-to-zoom for a Mac trackpad. [English quick start](#english-quick-start).
+
+---
+
+## 想知道我们折腾了什么？往下看
 
 ## 操作
 
